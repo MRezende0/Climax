@@ -1,0 +1,310 @@
+import requests
+from bs4 import BeautifulSoup
+from datetime import datetime
+from pymongo import MongoClient
+
+
+conexao = MongoClient('localhost', 27017)
+meuBanco = conexao.get_database('clima_tempo')
+
+colecao = meuBanco.get_collection('dados')
+
+colecao = meuBanco.get_collection('dados')
+
+now= datetime.now()
+
+# ---------------------------------------------------------------------------------------------------------
+requisicaoHoje = requests.get("https://www.climatempo.com.br/previsao-do-tempo/cidade/486/marilia-sp")
+soupHoje = BeautifulSoup(requisicaoHoje.content, 'html.parser')
+# ---------------------------------------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------------------------------------
+requisicaoteste = requests.get("https://www.climatempo.com.br/previsao-do-tempo/cidade/486/marilia-sp")
+soupTeste = BeautifulSoup(requisicaoHoje.content, 'html.parser')
+# ---------------------------------------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------------------------------------
+requisicaoAgora= requests.get("https://www.climatempo.com.br/previsao-do-tempo/agora/cidade/486/marilia-sp")
+soupAgora = BeautifulSoup(requisicaoAgora.content, 'html.parser')
+# ---------------------------------------------------------------------------------------------------------
+
+requisicaoClimaBrasil = requests.get("https://www.climadobrasil.com.br/estado-de-sao-paulo/marilia")
+soupClimaBrasilVentoChuva = BeautifulSoup(requisicaoClimaBrasil.content, 'html.parser')
+
+# ---------------------------------------------------------------------------------------------------------
+temperaturaMinHojeFind = soupHoje.find('span', {'id': 'min-temp-1'})
+temperaturaMinHojeFind = temperaturaMinHojeFind.text
+# print("\nTemperatura Minima : ", temperaturaMinHojeFind.text)
+# PEGA A TEMPERATURA MINIMA DO DIA DE HOJE -
+
+
+# ---------------------------------------------------------------------------------------------------------
+temperaturaMaxHojeFind = soupHoje.find('span', {'id': 'max-temp-1'})
+temperaturaMaxHojeFind = temperaturaMaxHojeFind.text
+# print("\nTemperatura Maxima : ", temperaturaMaxHojeFind.text)
+# PEGA A TEMPERATURA MAXIMA DO DIA DE HOJE -
+
+
+# ---------------------------------------------------------------------------------------------------------
+temperaturaAgoraFind = soupAgora.find('span', {'class': '_margin-l-30'})
+temperaturaAgoraFind = temperaturaAgoraFind.text
+# print("\nTemperatura atual: ", temperaturaAgoraFind.text)
+# PEGA A TEMPERATURA ATUAL -
+
+# ---------------------------------------------------------------------------------------------------------
+nascersolFind = soupAgora.find('p', {'class': '-gray _flex'})
+nascersolFind = nascersolFind.text
+# print("Nascer do sol:", nascersolFind.text)
+# PEGA O NASCER DO SOL - 
+
+# ---------------------------------------------------------------------------------------------------------
+porsolFind = soupAgora.find('li', {'class': '_padding-l-3'})
+porsolFind = porsolFind.text
+# print("Pôr do sol:", porsolFind.text)
+# PEGA O POR DO SOL - 
+
+# ---------------------------------------------------------------------------------------------------------
+luaFind = soupAgora.find('p', {'class': '-gray _margin-l-5'})
+luaFind = luaFind.text
+# print("Lua:", luaFind.text)
+# PEGA A LUA - 
+
+# ---------------------------------------------------------------------------------------------------------
+previsaoFind = soupHoje.find('p', {'class': '-gray -line-height-24 _center'})
+previsaoFind = previsaoFind.text
+# print("Previsão:", previsaoFind.text)
+# PEGA A PREVISÃO
+
+# ---------------------------------------------------------------------------------------------------------
+ventoFind= soupClimaBrasilVentoChuva.find('span', {'data-wind-include-units': '1'})
+ventoFind = ventoFind.text
+    
+# print("Velocidade do vento hoje:", ventoFind)
+# PEGA A VELOCIDADE DO VENTO
+
+chuvaFind = soupClimaBrasilVentoChuva.find('div', {'class': 'm_table_weather_day_child m_table_weather_day_rain'})
+chuvaFind = chuvaFind.text
+# print("\nPrecipitação:", chuvaFind.text)
+# PEGA A CHUVA
+
+listaFind = soupAgora.find_all('ul',{'class' : 'list'})
+# for listasLi in listaFind:
+#     lista = listasLi.find_all('p',{'class' : '-gray'})
+  
+#     for listaDados in lista:
+            
+#          mostrar = str(listaDados.next_element)
+#          if mostrar.strip() != '' :
+            
+#             while cont < 3:
+#                 cont = cont + 1
+
+#                 if cont == 1 :
+#                    print('Umidade : {}'.format(mostrar.lstrip())) 
+# PEGAR UMIDADE
+
+
+
+if temperaturaMinHojeFind.strip() != '' :
+    # print('\n\nTemperatura Minima : {:2}\n' .format(temperaturaMinHojeFind.lstrip()))
+    inserindotmpmin = temperaturaMinHojeFind.lstrip()
+
+if temperaturaMaxHojeFind.strip() != '' :
+    # print('\n\nTemperatura Maxima : {:2}C\n' .format(temperaturaMaxHojeFind.lstrip()))
+    inserindotmpmax = temperaturaMaxHojeFind.lstrip()
+
+if temperaturaAgoraFind.strip() != '' :
+    # print('\n\nTemperatura Atual : {:2}\n' .format(temperaturaAgoraFind.lstrip()))
+    inserindotmpagora = temperaturaAgoraFind.lstrip()
+
+if nascersolFind.strip() != '' :
+    # print('\n\nNascer do Sol : {}' .format(nascersolFind.lstrip()))
+    inserindonascer = nascersolFind.lstrip()
+
+if porsolFind.strip() != '' :
+    # print('\n\nPor do Sol : {}' .format(porsolFind.lstrip()))
+    inserindopordosol = porsolFind.lstrip()
+
+if luaFind.strip() != '' :
+    # print('\n\nLua : {}' .format(luaFind.lstrip()))
+    inserindolua = luaFind.lstrip()
+
+if previsaoFind.strip() != '' :
+    # print('\n\n{}\n' .format(previsaoFind.lstrip()))
+    inserindoprevisao = previsaoFind.lstrip()
+
+if  ventoFind.strip() != '' :
+    # print('\n\nVelocidade do Vento : {}\n' .format(ventoFind.lstrip()))  
+    inserindovento = ventoFind.lstrip()
+
+cont = 0
+
+for listasLi in listaFind:
+    lista = listasLi.find_all('p',{'class' : '-gray'})
+
+    for listaDados in lista:
+
+        mostrar = str(listaDados.next_element)
+        if mostrar.strip() != '' :
+
+            while cont < 3:
+                 cont = cont + 1
+
+                 if cont == 1 :
+                    # print(' \n\nUmidade : {}'.format(mostrar.lstrip()))   
+                    inserindoumidade = mostrar.lstrip()
+
+if chuvaFind.strip() != '' :
+    # print('\n\n{}\n' .format(chuvaFind.strip())) 
+    inserindochuva = chuvaFind.strip()
+
+
+meuBanco.dados.insert_one({
+    'data' : str(now),
+    'tempMin' : str(inserindotmpmin),
+    'tempMax' : str(inserindotmpmax),
+    'tempAtual' : str(inserindotmpagora),
+    'nascerSol' : str(inserindonascer),
+    'porSol' : str(inserindopordosol),
+    'lua' : str(inserindolua),
+    'previsao' : str(inserindoprevisao),
+    'vento' : str(inserindovento),
+    'umidade' : str(inserindoumidade),
+    'chuva' : str(inserindochuva),
+})
+
+             
+repeticao = 9999  
+while repeticao >0:
+
+    print('--------------------------------')
+    print(' WEB CRAWLER PARA COLETAR DADOS ')
+    print('--------------------------------')
+    print('--------------------------------')
+    print('| Especificacao       | Codigo |')
+    print('--------------------------------')
+    print('| Temperatura Minima  |   100  |')
+    print('| Temperatura Maxima  |   101  |')
+    print('| Temperatura Atual   |   102  |')
+    print('| Nascer do Sol       |   103  |')
+    print('| Por do Sol          |   104  |')
+    print('| Lua                 |   105  |')
+    print('| Previsão            |   106  |')
+    print('| Velocidade do Vento |   107  |')
+    print('| Umidade             |   108  |')
+    print('| Precipitação        |   109  |')
+    print('| Todos os elementos  |   110  |')
+    print('--------------------------------')
+    print('Qual dado precisa saber?')
+    print('--------------------------------')
+    codigo = int(input('Digite o código do item: '))   
+
+
+    if (codigo == 100):
+        if temperaturaMinHojeFind.strip() != '' :
+           print('\n\nTemperatura Minima : {:2}\n' .format(temperaturaMinHojeFind.lstrip()))
+      
+      
+    if (codigo == 101):
+        if temperaturaMaxHojeFind.strip() != '' :
+            print('\n\nTemperatura Maxima : {:2}C\n' .format(temperaturaMaxHojeFind.lstrip()))
+
+   
+    if (codigo == 102):
+        if temperaturaAgoraFind.strip() != '' :
+            print('\n\nTemperatura Atual : {:2}\n' .format(temperaturaAgoraFind.lstrip()))
+      
+    if (codigo == 103):
+        if nascersolFind.strip() != '' :
+            print('\n\nNascer do Sol : {}' .format(nascersolFind.lstrip()))
+      
+    if (codigo == 104):
+        if porsolFind.strip() != '' :
+            print('\n\nPor do Sol : {}' .format(porsolFind.lstrip()))
+      
+    if (codigo == 105):
+        if luaFind.strip() != '' :
+            print('\n\nLua : {}' .format(luaFind.lstrip()))
+    
+    if (codigo == 106):
+        if previsaoFind.strip() != '' :
+            print('\n\n{}\n' .format(previsaoFind.lstrip()))
+      
+    if (codigo == 107):
+        if  ventoFind.strip() != '' :
+            print('\n\nVelocidade do Vento : {}\n' .format(ventoFind.lstrip()))
+
+    if (codigo == 108):
+
+        cont = 0
+
+        for listasLi in listaFind:
+            lista = listasLi.find_all('p',{'class' : '-gray'})
+
+            for listaDados in lista:
+
+                mostrar = str(listaDados.next_element)
+                if mostrar.strip() != '' :
+
+                    while cont < 3:
+                        cont = cont + 1
+
+                        if cont == 1 :
+                            print(' \n\nUmidade : {}'.format(mostrar.lstrip()))
+
+    if (codigo == 109):
+
+        if chuvaFind.strip() != '' :
+            print('\n\n{}\n' .format(chuvaFind.strip()))
+
+    if (codigo == 110):
+        
+        if temperaturaMinHojeFind.strip() != '' :
+           print('\n\nTemperatura Minima : {:2}\n' .format(temperaturaMinHojeFind.lstrip()))
+
+        if temperaturaMaxHojeFind.strip() != '' :
+            print('\n\nTemperatura Maxima : {:2}C\n' .format(temperaturaMaxHojeFind.lstrip()))
+
+        if temperaturaAgoraFind.strip() != '' :
+            print('\n\nTemperatura Atual : {:2}\n' .format(temperaturaAgoraFind.lstrip()))
+
+        if nascersolFind.strip() != '' :
+            print('\n\nNascer do Sol : {}' .format(nascersolFind.lstrip()))
+
+        if porsolFind.strip() != '' :
+            print('\n\nPor do Sol : {}' .format(porsolFind.lstrip()))
+
+        if luaFind.strip() != '' :
+            print('\n\nLua : {}' .format(luaFind.lstrip()))
+
+        if previsaoFind.strip() != '' :
+            print('\n\n{}\n' .format(previsaoFind.lstrip()))
+
+        if  ventoFind.strip() != '' :
+            print('\n\nVelocidade do Vento : {}\n' .format(ventoFind.lstrip()))  
+
+        cont = 0
+
+        for listasLi in listaFind:
+            lista = listasLi.find_all('p',{'class' : '-gray'})
+
+            for listaDados in lista:
+
+                mostrar = str(listaDados.next_element)
+                if mostrar.strip() != '' :
+
+                    while cont < 3:
+                        cont = cont + 1
+
+                        if cont == 1 :
+                            print(' \n\nUmidade : {}'.format(mostrar.lstrip()))   
+
+        if chuvaFind.strip() != '' :
+            print('\n\n{}\n' .format(chuvaFind.strip())) 
+
+    print('\nDeseja algo mais ?\n')
+    codigo = int(input('1 para sim e 0 para não : '))   
+		
+    if (codigo == 0):
+        repeticao=0
+        print("\nMuito obrigado por escolher o CLIMAX!")

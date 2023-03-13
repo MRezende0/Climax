@@ -1,0 +1,74 @@
+import requests
+from bs4 import BeautifulSoup
+from pymongo import MongoClient
+
+conexao = MongoClient('localhost', 27017)
+meuBanco = conexao.get_database('clima_tempo')
+
+colecao = meuBanco.get_collection('dados')
+
+
+for dados in colecao.find():
+    dados.get('data') 
+    dados.get('tempMin')
+    dados.get('temMax')
+    dados.get('tempAtual')
+    dados.get('nascerSol')
+    dados.get('porSol')
+    dados.get('lua')
+    dados.get('previsao')
+    dados.get('vento')
+    dados.get('umidade')
+    dados.get('chuva')
+
+
+print('=============================================================================================\n')
+for dados in colecao.find():
+    print(dados.get('data'), ' - Temperatura Minima : ',dados.get('tempMin'))
+
+print('=============================================================================================\n')
+for dados in colecao.find():
+    print(dados.get('data'), ' - Temperatura Maxima : ',dados.get('tempMax'))
+
+print('=============================================================================================\n')
+for dados in colecao.find():
+    print(dados.get('data'), ' - Temperatura Atual  : ',dados.get('tempAtual'))
+
+print('=============================================================================================\n')
+for dados in colecao.find():
+    print(dados.get('data'), ' - Nascer do Sol      : ',dados.get('nascerSol'))
+
+print('=============================================================================================\n')
+for dados in colecao.find():
+    print(dados.get('data'), ' - Por do Sol         : ',dados.get('porSol'))
+
+print('=============================================================================================\n')
+for dados in colecao.find():
+    print(dados.get('data'), ' - Lua                : ',dados.get('lua'))
+
+print('=============================================================================================\n')
+for dados in colecao.find():
+    print(dados.get('data'), ' - Previsão           : ',dados.get('previsao'))
+
+print('=============================================================================================\n')
+for dados in colecao.find():
+    print(dados.get('data'), ' - Velocidade do Vento: ',dados.get('vento'))
+
+print('=============================================================================================\n')
+for dados in colecao.find():
+    print(dados.get('data'), ' - Umidade            : ',dados.get('umidade'))
+
+print('=============================================================================================\n')
+for dados in colecao.find():
+    print(dados.get('data'), ' - Chuva              : ',dados.get('chuva'))
+
+# print(dados.get('data'), ' - Temperatura Minima : ',dados.get('tempMin'),'\n')
+# print(dados.get('data'), ' - Temperatura Maxima : ',dados.get('tempMax'),'\n')
+# print(dados.get('data'), ' - Temperatura Atula  : ',dados.get('tempAtual'),'\n')
+# print(dados.get('data'), ' - Nascer do Sol      : ',dados.get('nascerSol'),'\n')
+# print(dados.get('data'), ' - Por do Sol         : ',dados.get('porSol'),'\n')
+# print(dados.get('data'), ' - Lua                : ',dados.get('lua'),'\n')
+# print(dados.get('data'), ' - Previsão           : ',dados.get('previsao'),'\n')
+# print(dados.get('data'), ' - Velocidade do Vento: ',dados.get('vento'),'\n')
+# print(dados.get('data'), ' - Umidade            : ',dados.get('umidade'),'\n')
+# print(dados.get('data'), ' - Chuva              : ',dados.get('chuva'),'\n')
